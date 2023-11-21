@@ -19,7 +19,7 @@ Collision (Player, Enemies, Projectiles)
 Different Screens
 Score System
 Level System
-Images & Sounds
+Sprites, Images & Sounds
 Health System
 Key Binds
 __________________________________________
