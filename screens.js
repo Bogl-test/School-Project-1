@@ -45,6 +45,7 @@ function play_screen() {
     image(School_Project_BG, 0, 0)
     for (let i = 0; i < enemyCount.length; i++) {
         enemyCount[i].draw();
+        enemyCount[i].over_lapping()
     }
     for (let i = 0; i < bulletCount.length; i++) {
         bulletCount[i].bulletDraw();

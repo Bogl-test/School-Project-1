@@ -58,9 +58,9 @@ function level_up() {
     xp_count = 0
     playerHealth = 5
     level_up_text_start_time = millis();
-    if (millis() + level_up_text_start_time<level_up_text_time){
-    text("GRE", width/2,height/2)
-  }
+    if (millis() + level_up_text_start_time < level_up_text_time) {
+      text("GRE", width / 2, height / 2)
+    }
   }
 }
 
@@ -124,41 +124,41 @@ function player() {
   pop();
 
   // PLAYER MOVEMENT:
-  if (keyIsDown(65) && keyIsDown(87) || keyIsDown(LEFT_ARROW) && keyIsDown(UP_ARROW)){
-    playerPos.x -= (playerSpeed/sqrt(50)*5);
-    playerPos.y -= (playerSpeed/sqrt(50)*5);
+  if (keyIsDown(65) && keyIsDown(87) || keyIsDown(LEFT_ARROW) && keyIsDown(UP_ARROW)) {
+    playerPos.x -= (playerSpeed / sqrt(50) * 5);
+    playerPos.y -= (playerSpeed / sqrt(50) * 5);
   }
-  else if (keyIsDown(65) && keyIsDown(83) || keyIsDown(LEFT_ARROW) && keyIsDown(DOWN_ARROW)){
-    playerPos.x -= (playerSpeed/sqrt(50)*5);
-    playerPos.y += (playerSpeed/sqrt(50)*5);
+  else if (keyIsDown(65) && keyIsDown(83) || keyIsDown(LEFT_ARROW) && keyIsDown(DOWN_ARROW)) {
+    playerPos.x -= (playerSpeed / sqrt(50) * 5);
+    playerPos.y += (playerSpeed / sqrt(50) * 5);
   }
-  else if (keyIsDown(68) && keyIsDown(87) || keyIsDown(RIGHT_ARROW) && keyIsDown(UP_ARROW)){
-    playerPos.x += (playerSpeed/sqrt(50)*5);
-    playerPos.y -= (playerSpeed/sqrt(50)*5);
+  else if (keyIsDown(68) && keyIsDown(87) || keyIsDown(RIGHT_ARROW) && keyIsDown(UP_ARROW)) {
+    playerPos.x += (playerSpeed / sqrt(50) * 5);
+    playerPos.y -= (playerSpeed / sqrt(50) * 5);
   }
-  else if(keyIsDown(68) && keyIsDown(83) || keyIsDown(RIGHT_ARROW) && keyIsDown(DOWN_ARROW)){
-    playerPos.x += (playerSpeed/sqrt(50)*5);
-    playerPos.y += (playerSpeed/sqrt(50)*5);
+  else if (keyIsDown(68) && keyIsDown(83) || keyIsDown(RIGHT_ARROW) && keyIsDown(DOWN_ARROW)) {
+    playerPos.x += (playerSpeed / sqrt(50) * 5);
+    playerPos.y += (playerSpeed / sqrt(50) * 5);
   }
-  else
-  {
-  if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) {
-    // Move left:
-    playerPos.x -= playerSpeed;
+  else {
+    if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) {
+      // Move left:
+      playerPos.x -= playerSpeed;
+    }
+
+    if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) {
+      // Move right:
+      playerPos.x += playerSpeed;
+    }
+    if (keyIsDown(87) || keyIsDown(UP_ARROW)) {
+      // Move up:
+      playerPos.y -= playerSpeed;
+    }
+    if (keyIsDown(83) || keyIsDown(DOWN_ARROW)) {
+      // Move down:
+      playerPos.y += playerSpeed;
+    }
   }
-  
-  if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) {
-    // Move right:
-    playerPos.x += playerSpeed;
-  }
-  if (keyIsDown(87) || keyIsDown(UP_ARROW)) {
-    // Move up:
-    playerPos.y -= playerSpeed;
-  }
-  if (keyIsDown(83) || keyIsDown(DOWN_ARROW)) {
-    // Move down:
-    playerPos.y += playerSpeed;
-  }}
 
   // PLAYER COLLISIONS:
   if (playerPos.y < 0 + playerSize / 2) {
@@ -244,6 +244,29 @@ class Enemy {
     fill("red");
     circle(this.enemyPos.x, this.enemyPos.y, enemySize);
   }
+  over_lapping() {
+    /// CHATGPT. Need understand on how the code works. 
+    for (let i = 0; i < enemyCount.length; i++) {
+      const currentEnemy = enemyCount[i]; // First enemy
+      
+      for (let j = 0; j < enemyCount.length; j++) {
+        if (i !== j) { // takes the index of enemies that are not apart of the first array
+          const otherEnemy = enemyCount[j]; // Second enemy
+          const distance = dist(currentEnemy.enemyPos.x, currentEnemy.enemyPos.y, otherEnemy.enemyPos.x, otherEnemy.enemyPos.y);
+          if (distance <= enemySize) {
+            // Calculate a normalized vector pointing away from the other enemy
+            const awayVector = p5.Vector.sub(currentEnemy.enemyPos, otherEnemy.enemyPos).normalize();
+            
+            // Adjust the position of the current enemy away from the other enemy
+            const moveDistance = enemySize - distance;
+            currentEnemy.enemyPos.add(awayVector.mult(moveDistance));
+          }
+        }
+      }
+    }
+  }
+  
+  
 }
 
 // Player Projectiles
@@ -262,14 +285,14 @@ class Bullet {
     this.pos.add(this.direction)
     push()
     translate(this.pos)
-    textSize(bulletSize*2)
-    textAlign(CENTER,CENTER)
+    textSize(bulletSize * 2)
+    textAlign(CENTER, CENTER)
     angleMode(DEGREES)
-    rotate(this.rotation+90)
-    fill(248,240,0)
-    text(random(matrixSymbols),0,bulletSize/3)
-    fill(255,120,0)
-    text("日",0,bulletSize/3)
+    rotate(this.rotation + 90)
+    fill(248, 240, 0)
+    text(random(matrixSymbols), 0, bulletSize / 3)
+    fill(255, 120, 0)
+    text("日", 0, bulletSize / 3)
     pop()
   }
 
@@ -279,20 +302,20 @@ class Bullet {
     for (let i = 0; i < enemyCount.length; i++) {
       const e = enemyCount[i];
       if (dist(e.enemyPos.x, e.enemyPos.y, this.pos.x, this.pos.y) <= enemySize / 2 + bulletSize / 2) {
-        enemyCount.splice(i, 1)
+        enemyCount.splice(i, 1);
         enemyCount.push(new Enemy());
-        enemies_Killed++
-        bulletCount.splice(bulletCount[i], 1)
-        enemy_death.play()
-        xp_count += 1
-
+        bulletCount.splice(bulletCount.indexOf(this), 1);
+        enemies_Killed++;
+        enemy_death.play();
+        xp_count += 1;
       }
-      else if (this.pos.x < 0 || this.pos.x > innerWidth || this.pos.y > innerHeight || this.pos.y < 0) {
-        bulletCount.splice(i, 1)
-      }
+    }
+    if (this.pos.x < 0 || this.pos.x > innerWidth || this.pos.y > innerHeight || this.pos.y < 0) {
+      bulletCount.splice(bulletCount.indexOf(this), 1)
     }
   }
 }
+
 
 function setup() {
   createCanvas(innerWidth, innerHeight);
@@ -319,7 +342,7 @@ function keyPressed() {
 }
 
 function mousePressed() {
-  if (mouseButton == LEFT && attack == true && bulletCount.length < 5) {
+  if (mouseButton == LEFT && attack == true && bulletCount.length < 3) {
     for (let i = 0; i < 1; i++) {
       bulletCount.push(new Bullet(playerPos.x, playerPos.y));
     }
