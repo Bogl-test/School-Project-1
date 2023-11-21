@@ -248,7 +248,7 @@ class Enemy {
     /// CHATGPT. Need understand on how the code works. 
     for (let i = 0; i < enemyCount.length; i++) {
       const currentEnemy = enemyCount[i]; // First enemy
-      
+
       for (let j = 0; j < enemyCount.length; j++) {
         if (i !== j) { // takes the index of enemies that are not apart of the first array
           const otherEnemy = enemyCount[j]; // Second enemy
@@ -256,7 +256,7 @@ class Enemy {
           if (distance <= enemySize) {
             // Calculate a normalized vector pointing away from the other enemy
             const awayVector = p5.Vector.sub(currentEnemy.enemyPos, otherEnemy.enemyPos).normalize();
-            
+
             // Adjust the position of the current enemy away from the other enemy
             const moveDistance = enemySize - distance;
             currentEnemy.enemyPos.add(awayVector.mult(moveDistance));
@@ -265,8 +265,8 @@ class Enemy {
       }
     }
   }
-  
-  
+
+
 }
 
 // Player Projectiles
@@ -295,7 +295,6 @@ class Bullet {
     text("日", 0, bulletSize / 3)
     pop()
   }
-
 
   // Collision between projectiles and enemies
   hit() {

@@ -1,4 +1,29 @@
-gun shooting sond from: https://pixabay.com/sound-effects/search/glock/
+__________________________________________
+
+Aksel Würgler Kærgaard:
+_______________________
+Player Design
+Enemy Structure
+Enemy Spawning
+Bullet Spawning
+Shooting
+Player Rotation
+Key Binds
+__________________________________________
+
+Olivér Farkas:
+_______________
+Player Movement
+Enemy Movement
+Collision (Player, Enemies, Projectiles)
+Different Screens
+Score System
+Level System
+Images & Sounds
+Health System
+Key Binds
+__________________________________________
+
+Gun Sound from: https://pixabay.com/sound-effects/search/glock/
 
 Music from: https://opengameart.org/content/5-chiptunes-action
-
