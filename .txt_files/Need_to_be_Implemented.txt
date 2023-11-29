@@ -1,0 +1,39 @@
+Boss:
+
+every 100 enemies killed, a boss spawns.
+spawns minions?
+make it a class
+give it a souls-like health bar
+boss Music
+boss hit sound
+
+
+
+_______________
+balancing:
+
+difficulty tweaks
+amount of enemies
+enemy speed
+amount of ammo
+ammo crate spawn time
+level up rewards
+
+
+_______________
+features:
+
+decoy
+
+rolling (takes the direction of player movement and when space is pressed the player moves 10x the normal distance)
+Cooldown timer visuable for the player
+
+fix Music
+
+different enemy death sound
+
+different weapons (shotty), (way to change weapons)
+
+power ups (unlimited ammo for 5 secs.)
+
+info screen (info on what things do/are) (press 'H' on start screen to bring up info)

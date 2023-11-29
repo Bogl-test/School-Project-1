@@ -108,13 +108,26 @@ function controls_screen() {
     if (typeof timer == "undefined") {
         timer = millis()
     }
-    background(123)
+    push()
+    noStroke()
+    fill(0,0,0)
+    background(70)
+    textAlign(CENTER, CENTER)
+    textSize(90)
+    text("Controls", width / 2, height / 5)
+    if (millis() / 1000 > 1) {
+        text("Press ENTER to Continue", width / 2, height / 2 + height / 2.5)
+    }
+    textSize(30)
+    text("WASD or Arrow Keys to Move", width / 2, height / 3)
+    text("LMB to Shoot", width / 2, height / 2 - height / 8)
+    text("P to Pause Game", width / 2, height / 2 - height / 12)
+    text("ENTER to Continue Game", width / 2, height / 2 - height / 25)
     if (keyIsDown(13) && millis() - timer > 1000) {
         Screen = 2
         timer = undefined
-
     }
-
+    pop()
 }
 
 function play_screen() {

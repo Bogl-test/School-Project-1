@@ -1,18 +1,18 @@
 // GAME VARIABLES:
 let matrixGif;
 let music = false
-let Screen = 1
+let Screen = 2
 let arrowY;
 
 let enemies_Killed = 0
 let playerHealth = 5
 
 let ammo_crate_drop = false
-let ammo_crate_spawn_time = 20000 // 20 Seconds
+let ammo_crate_spawn_time = 3000 // 20 Seconds
 let ammo_crate_start_time;
 let ammo_crate_x;
 let ammo_crate_y;
-let ammo_crate_size = 50
+let ammo_crate_size = 32
 
 let end_screen_time = 800 // matrix glitch effect lenght
 let end_screen_start_time;
@@ -65,6 +65,7 @@ function preload() {
   School_Project_BG = loadImage("assets/BG.png")
   player_1 = loadImage("assets/player_1.png ");
   player_2 = loadImage("assets/player_2.png ");
+  ammo = loadImage("assets/pistol_ammo.png")
 
   menu_Music = loadSound("assets/Menu.mp3")
   lvl1_Music = loadSound("assets/lvl1.mp3")
@@ -88,9 +89,8 @@ function level_up() {
 
 function Ammo_Crate() {
   if (!ammo_crate_drop && millis() - ammo_crate_start_time > ammo_crate_spawn_time) {
-    rectMode(CENTER, CENTER)
-    fill(255, 255, 0);
-    rect(ammo_crate_x, ammo_crate_y, ammo_crate_size, ammo_crate_size);
+    image(ammo, ammo_crate_x - 16, ammo_crate_y - 16)
+    noFill()
   }
   if (dist(playerPos.x, playerPos.y, ammo_crate_x, ammo_crate_y) < (playerSize + ammo_crate_size) / 2) {
     ammo_crate_start_time = undefined;
@@ -359,13 +359,20 @@ function setup() {
 }
 
 function keyPressed() {
-  if (Screen == 2 && keyCode === (80)) {
+  if (Screen == 2 && keyCode === (80) && !locked) {
     attack = false
     frameRate(0)
     locked = true
     requestPointerLock()
+    push()
+    fill(49, 113, 63, 140)
+    textAlign(CENTER, CENTER)
+    textSize(40)
+    text("Game Paused", width/2,height/3)
+    text("Press ENTER or ESC to continue",width/2,height/3+60)
+    pop()
   }
-  if (keyCode === (13) && Screen == 2) {
+  if (keyCode === (13) && Screen == 2 && locked || keyCode === (27) && Screen == 2 && locked) {
     attack = true
     frameRate(60)
     exitPointerLock();
@@ -375,6 +382,7 @@ function keyPressed() {
     Screen = 1
     frameRate(60)
   }
+
 
   //Difficulty cycling
   if (keyCode == (65) && Screen == 1 || keyCode == (LEFT_ARROW) && Screen == 1) {
