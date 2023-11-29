@@ -110,7 +110,7 @@ function controls_screen() {
     }
     push()
     noStroke()
-    fill(0,0,0)
+    fill(0, 0, 0)
     background(70)
     textAlign(CENTER, CENTER)
     textSize(90)
@@ -133,6 +133,17 @@ function controls_screen() {
 function play_screen() {
     image(School_Project_BG, 0, 0)
     noCursor()
+    if (typeof stamina_regen_start_time === "undefined") {
+        stamina_regen_start_time = millis()
+    }
+    else if (millis() - stamina_regen_start_time > stamina_regen_time) {
+        if (stamina_amount !== 100) {
+            stamina_amount += stamina_regen_amount
+        }
+        stamina_regen_start_time = undefined
+        
+    }
+
     if (typeof ammo_crate_start_time === 'undefined') { // if ammo_crate_start_time doesn't have a value then it runs ammo_crate_start_time.
         ammo_crate_x = random(0 + ammo_crate_size, width - ammo_crate_size);
         ammo_crate_y = random(0 + ammo_crate_size, height - ammo_crate_size);
@@ -155,8 +166,9 @@ function play_screen() {
     text("Enemies Killed : " + enemies_Killed, 20, 40)
     text("Health : " + playerHealth, 20, 90)
     text("XP to level up: " + (xp_to_level_up - xp_count), 20, 140)
-    text("Bullets remaining: " + bullet_amount, 20, 190)
+    text("Stamina: " + stamina_amount, 20, 190)
     level_up();
+    stamina_bar()
     pop();
 }
 
@@ -212,7 +224,7 @@ function death_screen() {
         enemySpeed = 1
         enemies_Killed = 0
         playerHealth = 5
-        bullet_amount = 30
+        stamina_amount = 20
         easy_mode = true
         medium_mode = false
         hard_mode = false

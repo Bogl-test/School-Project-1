@@ -8,7 +8,7 @@ let enemies_Killed = 0
 let playerHealth = 5
 
 let ammo_crate_drop = false
-let ammo_crate_spawn_time = 3000 // 20 Seconds
+let ammo_crate_spawn_time = 10000
 let ammo_crate_start_time;
 let ammo_crate_x;
 let ammo_crate_y;
@@ -42,6 +42,17 @@ let show_Player_2 = false
 let player2_Display_Time = 100;
 let player2_Display_Start_Time;
 
+let stamina_amount = 20
+let stamina_regen_amount = 1
+let stamina_regen_time = 100
+let stamina_regen_start_time;
+let max_stamina = 100
+
+let roll_time = 300
+let roll_start_time;
+let roll_distance = 60;
+let roll_cost = 10
+
 let xp_count = 0
 let xp_to_level_up = 12
 let high_score = 0
@@ -50,7 +61,6 @@ let high_score = 0
 let bulletCount = [];
 let bulletSpeed = 12;
 let bulletSize = 6;
-let bullet_amount = 30
 
 // ENEMY VARIABLES:
 let enemyCount = [];
@@ -65,7 +75,6 @@ function preload() {
   School_Project_BG = loadImage("assets/BG.png")
   player_1 = loadImage("assets/player_1.png ");
   player_2 = loadImage("assets/player_2.png ");
-  ammo = loadImage("assets/pistol_ammo.png")
 
   menu_Music = loadSound("assets/Menu.mp3")
   lvl1_Music = loadSound("assets/lvl1.mp3")
@@ -81,7 +90,6 @@ function level_up() {
     playerSpeed = playerSpeed * 1.2
     xp_to_level_up = floor(xp_to_level_up * 1.5)
     xp_count = 0
-    bullet_amount += floor(xp_to_level_up / 2)
     if (playerHealth < 5)
       playerHealth += 1
   }
@@ -89,12 +97,14 @@ function level_up() {
 
 function Ammo_Crate() {
   if (!ammo_crate_drop && millis() - ammo_crate_start_time > ammo_crate_spawn_time) {
-    image(ammo, ammo_crate_x - 16, ammo_crate_y - 16)
-    noFill()
+    push()
+    rectMode(CENTER)
+    rect(ammo_crate_x, ammo_crate_y, ammo_crate_size)
+    pop()
   }
   if (dist(playerPos.x, playerPos.y, ammo_crate_x, ammo_crate_y) < (playerSize + ammo_crate_size) / 2) {
     ammo_crate_start_time = undefined;
-    bullet_amount += 20
+    stamina_amount += 20
   }
 }
 
@@ -120,6 +130,17 @@ function healthBar() {
     fill(34, 180, 76)
     rect(0, playerSize / 2 - 1, playerSize / 5, 4)
   }
+  pop()
+}
+
+function stamina_bar() {
+  push()
+  fill(0, 255, 0)
+  rect(25, 200, stamina_amount, 15)
+  noFill()
+  strokeWeight(2)
+  stroke(49, 113, 63, 230)
+  rect(25, 200, 100, 15)
   pop()
 }
 
@@ -155,42 +176,92 @@ function player() {
     image(player_1, -50, -75);
   }
   healthBar();
+  if (stamina_amount > max_stamina) {
+    stamina_amount = max_stamina
+  }
   pop();
 
   // PLAYER MOVEMENT:
+  if (typeof roll_start_time == "undefined") {
+    roll_start_time = millis()
+  }
   if (keyIsDown(65) && keyIsDown(87) || keyIsDown(LEFT_ARROW) && keyIsDown(UP_ARROW)) {
     playerPos.x -= (playerSpeed / sqrt(50) * 5);
     playerPos.y -= (playerSpeed / sqrt(50) * 5);
+    if (keyIsDown(32) && stamina_amount >= 10 && millis() - roll_start_time > roll_time) {
+      playerPos.x -= (playerSpeed / sqrt(50) * 5) * roll_distance;
+      playerPos.y -= (playerSpeed / sqrt(50) * 5) * roll_distance;
+      stamina_amount -= roll_cost
+      roll_start_time = undefined
+    }
   }
   else if (keyIsDown(65) && keyIsDown(83) || keyIsDown(LEFT_ARROW) && keyIsDown(DOWN_ARROW)) {
     playerPos.x -= (playerSpeed / sqrt(50) * 5);
     playerPos.y += (playerSpeed / sqrt(50) * 5);
+    if (keyIsDown(32) && stamina_amount >= 10 && millis() - roll_start_time > roll_time) {
+      playerPos.x -= (playerSpeed / sqrt(50) * 5) * roll_distance;
+      playerPos.y += (playerSpeed / sqrt(50) * 5) * roll_distance;
+      stamina_amount -= roll_cost
+      roll_start_time = undefined
+    }
   }
   else if (keyIsDown(68) && keyIsDown(87) || keyIsDown(RIGHT_ARROW) && keyIsDown(UP_ARROW)) {
     playerPos.x += (playerSpeed / sqrt(50) * 5);
     playerPos.y -= (playerSpeed / sqrt(50) * 5);
+    if (keyIsDown(32) && stamina_amount >= 10 && millis() - roll_start_time > roll_time) {
+      playerPos.x += (playerSpeed / sqrt(50) * 5) * roll_distance;
+      playerPos.y -= (playerSpeed / sqrt(50) * 5) * roll_distance;
+      stamina_amount -= roll_cost
+      roll_start_time = undefined
+    }
   }
   else if (keyIsDown(68) && keyIsDown(83) || keyIsDown(RIGHT_ARROW) && keyIsDown(DOWN_ARROW)) {
     playerPos.x += (playerSpeed / sqrt(50) * 5);
     playerPos.y += (playerSpeed / sqrt(50) * 5);
+    if (keyIsDown(32) && stamina_amount >= 10 && millis() - roll_start_time > roll_time) {
+      playerPos.x += (playerSpeed / sqrt(50) * 5) * roll_distance;
+      playerPos.y += (playerSpeed / sqrt(50) * 5) * roll_distance;
+      stamina_amount -= roll_cost
+      roll_start_time = undefined
+    }
   }
   else {
     if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) {
       // Move left:
       playerPos.x -= playerSpeed;
+      if (keyIsDown(32) && stamina_amount >= 10 && millis() - roll_start_time > roll_time) {
+        playerPos.x -= playerSpeed * roll_distance;
+        stamina_amount -= roll_cost
+        roll_start_time = undefined
+      }
     }
 
     if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) {
       // Move right:
       playerPos.x += playerSpeed;
+      if (keyIsDown(32) && stamina_amount >= 10 && millis() - roll_start_time > roll_time) {
+        playerPos.x += playerSpeed * roll_distance;
+        stamina_amount -= roll_cost
+        roll_start_time = undefined
+      }
     }
     if (keyIsDown(87) || keyIsDown(UP_ARROW)) {
       // Move up:
       playerPos.y -= playerSpeed;
+      if (keyIsDown(32) && stamina_amount >= 10 && millis() - roll_start_time > roll_time) {
+        playerPos.y -= playerSpeed * roll_distance;
+        stamina_amount -= roll_cost
+        roll_start_time = undefined
+      }
     }
     if (keyIsDown(83) || keyIsDown(DOWN_ARROW)) {
       // Move down:
       playerPos.y += playerSpeed;
+      if (keyIsDown(32) && stamina_amount >= 10 && millis() - roll_start_time > roll_time) {
+        playerPos.y += playerSpeed * roll_distance;
+        stamina_amount -= roll_cost
+        roll_start_time = undefined
+      }
     }
   }
 
@@ -368,8 +439,8 @@ function keyPressed() {
     fill(49, 113, 63, 140)
     textAlign(CENTER, CENTER)
     textSize(40)
-    text("Game Paused", width/2,height/3)
-    text("Press ENTER or ESC to continue",width/2,height/3+60)
+    text("Game Paused", width / 2, height / 3)
+    text("Press ENTER or ESC to continue", width / 2, height / 3 + 60)
     pop()
   }
   if (keyCode === (13) && Screen == 2 && locked || keyCode === (27) && Screen == 2 && locked) {
@@ -420,14 +491,14 @@ function keyPressed() {
 
 function mousePressed() {
   arrowY = height - height / 6
-  if (mouseButton == LEFT && attack == true && bullet_amount > 0) {
+  if (mouseButton == LEFT && attack == true && stamina_amount > 0) {
     for (let i = 0; i < 1; i++) {
       bulletCount.push(new Bullet(playerPos.x, playerPos.y));
     }
     show_Player_2 = true;
     player2_Display_Start_Time = millis();
     glock19_shoot.play()
-    bullet_amount -= 1
+    stamina_amount -= 1
   }
   //left button
   if (mouseX <= width / 2 - 310 && mouseX >= width / 2 - 415 && mouseY < arrowY + 120 && mouseY > arrowY - 70 && easy_mode == true && mouseButton == LEFT && Screen == 1) {

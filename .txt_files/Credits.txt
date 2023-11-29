@@ -29,5 +29,3 @@ __________________________________________
 Gun Sound from: https://pixabay.com/sound-effects/search/glock/
 
 Music from: https://opengameart.org/content/5-chiptunes-action
-
-Ammo Sprite from: https://fightswithbears.itch.io/2d-health-and-ammo-pickups
