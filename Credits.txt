@@ -9,6 +9,7 @@ Bullet Spawning
 Shooting
 Player Rotation
 Key Binds
+Start Screen Design
 __________________________________________
 
 Olivér Farkas:
@@ -22,6 +23,7 @@ Level System
 Sprites, Images & Sounds
 Health System
 Key Binds
+Start Screen Function
 __________________________________________
 
 Gun Sound from: https://pixabay.com/sound-effects/search/glock/
