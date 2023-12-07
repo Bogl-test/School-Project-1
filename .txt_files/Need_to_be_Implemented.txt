@@ -1,31 +1,27 @@
 Boss:
-
-every 100 enemies killed, a boss spawns (removes other enemies)
+Design
 spawns minions?
-make it a class
 give it a souls-like health bar
 boss Music
 boss hit sound
 
+(change boss drops)
 
 
-_______________
+_________________
 Balancing/Fixing:
 
 difficulty tweaks
 amount of enemies
 enemy speed
-amount of ammo
 "ammo crate" spawn time
-level up rewards
+level up rewards (1.2x speed, 1.1x damage currently)
 
 fix Music
 different enemy death sound
 
-_______________
+_________
 Features:
-
-other stuff takes stamina when implemented
 
 decoy (change enemy targeting for a few seconds)
 

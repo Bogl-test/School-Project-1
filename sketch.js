@@ -1,32 +1,36 @@
 // GAME VARIABLES:
-let matrixGif;
-let music = false
-let Screen = 2
-let arrowY;
+let matrixGif;  // BG
+let Screen = 2  // Screen that the player starts on
+let arrowY;   // var
 
-let enemies_Killed = 0
-let playerHealth = 5
+let score = 0 // Enemies killed
 
-let ammo_crate_drop = false
-let ammo_crate_spawn_time = 10000
-let ammo_crate_start_time;
-let ammo_crate_x;
-let ammo_crate_y;
-let ammo_crate_size = 32
+// ammo crate
+let ammo_crate_drop = false   // var
+let ammo_crate_spawn_time = 10000   // time to spawn ammo crate (10 secs)
+let ammo_crate_start_time;          // timer for ammo crate
+let ammo_crate_x; // var
+let ammo_crate_y; // var
+let ammo_crate_size = 32  // ammo crate size
 
-let end_screen_time = 800 // matrix glitch effect lenght
-let end_screen_start_time;
+let end_screen_time = 800 // matrix glitch effect lenght when killed
+let end_screen_start_time;  // timer
 
-let timer;
-let controls = false
+// controls screen
+let loading_meter = 0 // var 
+let loading_meter_intervals;
 
+//difficulty
 let easy_mode = true
 let medium_mode = false
 let hard_mode = false
 
-let attack = false
-let locked = false
+// Game features
+let attack = false // letting the player shoot
+let controls = false // letting the player move
+let locked = false // disabling the mouse movement
 
+// list of symbols used for the bullet
 let matrixSymbols =
   ["日", "ﾊ", "ﾐ", "ﾋ", "ｰ", "ｳ", "ｼ", "ﾅ", "ﾓ", "ﾆ", "ｻ", "ﾜ", "ﾂ", "ｵ",
     "ﾘ", "ｱ", "ﾎ", "ﾃ", "ﾏ", "ｹ", "ﾒ", "ｴ", "ｶ", "ｷ", "ﾑ", "ﾕ", "ﾗ", "ｾ", "ﾈ",
@@ -38,35 +42,49 @@ let matrixSymbols =
 let playerSize = 40;
 let playerSpeed = 2
 let playerPos;
-let show_Player_2 = false
-let player2_Display_Time = 100;
-let player2_Display_Start_Time;
+let show_Player_2 = false   // player shooting sprite
+let player2_Display_Time = 100; // how long the shooting sprite shows
+let player2_Display_Start_Time; // timer for shooting sprite
+let playerHealth = 5
 
-let stamina_amount = 20
-let stamina_regen_amount = 1
-let stamina_regen_time = 100
-let stamina_regen_start_time;
+let stamina_amount = 100 // starting stamina
+let stamina_regen_amount = 1  // amount of stamina the player gets every tick
+let stamina_regen_time = 100  // how long there goes inbetween every tick
+let stamina_regen_start_time; // timer for stamina regen
 let max_stamina = 100
 
-let roll_time = 300
-let roll_start_time;
-let roll_distance = 60;
-let roll_cost = 10
+let roll_time = 300 // downtime for rolling
+let roll_start_time;  // timer to keep track of time since last roll
+let roll_distance = 65;
+let bullet_cost = 3 // how much stamina shooting costs
+let roll_cost = 10  // how much stamina rolling costs
 
-let xp_count = 0
+let xp_count = 0 // how much xp the player has
 let xp_to_level_up = 12
 let high_score = 0
+let bossesKilled = 0;
 
-
-let bulletCount = [];
+let bulletDamage = 1  // damage done to bosses
+let bulletCount = []; // keeps track of every bullet on screen
 let bulletSpeed = 12;
 let bulletSize = 6;
 
 // ENEMY VARIABLES:
-let enemyCount = [];
+let enemyCount = [];  // keeps track of every enemy
 let enemySpeed = 1;
 let enemySize = 30;
-let enemyTarget;
+let enemyTarget;  // var
+
+let boss_indication_time = 1500 // time that boos spawn location indication stays on screen (1.5 sec)
+let boss_indication_start_time; // timer
+let boss_count = [] // keeps track of bosses
+let warningCycle = 0  // var
+let warningCycleCount = 5 // amount of warning indications
+let BossHealth = 100
+let bossSize = enemySize * 12
+
+const bossSpawnValues = [0.1, 0.2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]; // Determines at what point count the boss should spawn at
+
 
 // Loads a gif used for the menu screen. 
 // Also loads the music, images and sfx.
@@ -88,10 +106,11 @@ function preload() {
 function level_up() {
   if (xp_count >= xp_to_level_up) {
     playerSpeed = playerSpeed * 1.2
+    bulletDamage = bulletDamage * 1.1
     xp_to_level_up = floor(xp_to_level_up * 1.5)
     xp_count = 0
     if (playerHealth < 5)
-      playerHealth += 1
+      playerHealth ++
   }
 }
 
@@ -104,11 +123,11 @@ function Ammo_Crate() {
   }
   if (dist(playerPos.x, playerPos.y, ammo_crate_x, ammo_crate_y) < (playerSize + ammo_crate_size) / 2) {
     ammo_crate_start_time = undefined;
-    stamina_amount += 20
+    stamina_amount += floor(random(20,50))
   }
 }
 
-//Player Healthbox
+//Player Healthbar
 function healthBar() {
   push()
   rectMode(CENTER)
@@ -133,14 +152,15 @@ function healthBar() {
   pop()
 }
 
+// Stamina Bar
 function stamina_bar() {
   push()
   fill(0, 255, 0)
-  rect(25, 200, stamina_amount, 15)
+  rect(-25, 30, stamina_amount / 2, 5)
   noFill()
   strokeWeight(2)
   stroke(49, 113, 63, 230)
-  rect(25, 200, 100, 15)
+  rect(-25, 30, 50, 5)
   pop()
 }
 
@@ -149,8 +169,9 @@ function cross_hair() {
   push()
   translate(mouseX, mouseY)
   fill(0, 100, 255)
+  noStroke()
   rectMode(CENTER)
-  rect(0, 0, 3, 3)
+  rect(0, 0, 2, 2)
   rect(0, -13, 3, 6)
   rect(0, 13, 3, 6)
   rect(-13, 0, 6, 3)
@@ -160,6 +181,9 @@ function cross_hair() {
 
 // PLAYER STRUCTURE:
 function player() {
+  if (playerHealth <= 0) {
+    Screen = 3
+  }
   cross_hair();
   push();
   angleMode(DEGREES);
@@ -168,6 +192,8 @@ function player() {
   rotation = v0.angleBetween(v1);
   translate(playerPos.x, playerPos.y);
   rotate(rotation + 90);
+  stamina_bar()
+
 
   // PLAYER APPEARANCE:
   if (show_Player_2 && millis() - player2_Display_Start_Time < player2_Display_Time) {
@@ -287,9 +313,6 @@ function player() {
       enemyCount.push(new Enemy());
       playerHealth--
     }
-    if (playerHealth < 1) {
-      Screen = 3
-    }
   }
 }
 
@@ -349,8 +372,8 @@ class Enemy {
     fill("red");
     circle(this.enemyPos.x, this.enemyPos.y, enemySize);
   }
+
   over_lapping() {
-    /// CHATGPT. Need understand on how the code works. 
     for (let i = 0; i < enemyCount.length; i++) {
       const currentEnemy = enemyCount[i]; // First enemy
 
@@ -359,10 +382,7 @@ class Enemy {
           const otherEnemy = enemyCount[j]; // Second enemy
           const distance = dist(currentEnemy.enemyPos.x, currentEnemy.enemyPos.y, otherEnemy.enemyPos.x, otherEnemy.enemyPos.y);
           if (distance <= enemySize) {
-            // Calculate a normalized vector pointing away from the other enemy
             const awayVector = p5.Vector.sub(currentEnemy.enemyPos, otherEnemy.enemyPos).normalize();
-
-            // Adjust the position of the current enemy away from the other enemy
             const moveDistance = (enemySize - distance);
             currentEnemy.enemyPos.add(awayVector.mult(moveDistance));
           }
@@ -370,9 +390,37 @@ class Enemy {
       }
     }
   }
-
-
 }
+
+class Boss {
+  constructor() {
+    this.size = bossSize;
+    this.Boss_Pos = createVector(width / 2, height / 2)
+  }
+
+  draw() {
+    push()
+    enemyTarget = playerPos;
+    this.targeting = p5.Vector.sub(enemyTarget, this.Boss_Pos);
+    this.targeting.normalize();
+    this.targeting.mult(enemySpeed);
+    this.Boss_Pos.add(this.targeting);
+
+    fill(123, 200, 30)
+    circle(this.Boss_Pos.x, this.Boss_Pos.y, this.size)
+    pop()
+  }
+
+  collision() {
+    for (let i = 0; i < boss_count.length; i++) {
+      const boss = boss_count[i];
+      if (dist(boss.Boss_Pos.x, boss.Boss_Pos.y, playerPos.x, playerPos.y) <= (playerSize + enemySize * 12) / 2) {
+        playerHealth -= playerHealth
+      }
+    }
+  }
+}
+
 
 // Player Projectiles
 class Bullet {
@@ -409,9 +457,16 @@ class Bullet {
         enemyCount.splice(i, 1);
         enemyCount.push(new Enemy());
         bulletCount.splice(bulletCount.indexOf(this), 1);
-        enemies_Killed++;
+        score++;
         enemy_death.play();
         xp_count += 1;
+      }
+    }
+    for (let i = 0; i < boss_count.length; i++) {
+      const b = boss_count[i];
+      if (dist(b.Boss_Pos.x, b.Boss_Pos.y, this.pos.x, this.pos.y) <= (bossSize + bulletSize) / 2 && warningCycle == warningCycleCount && BossHealth > 0) {
+        bulletCount.splice(bulletCount.indexOf(this), 1);
+        BossHealth -= bulletDamage
       }
     }
     if (this.pos.x < 0 || this.pos.x > innerWidth || this.pos.y > innerHeight || this.pos.y < 0) {
@@ -427,6 +482,10 @@ function setup() {
   for (let i = 0; i < 20; i++) {
     enemyCount.push(new Enemy());
   }
+  for (let i = 0; i < 1; i++) {
+    boss_count.push(new Boss())
+  }
+  arrowY = height - height / 6
 }
 
 function keyPressed() {
@@ -490,15 +549,14 @@ function keyPressed() {
 }
 
 function mousePressed() {
-  arrowY = height - height / 6
-  if (mouseButton == LEFT && attack == true && stamina_amount > 0) {
+  if (mouseButton == LEFT && attack == true && stamina_amount >= bullet_cost) {
     for (let i = 0; i < 1; i++) {
       bulletCount.push(new Bullet(playerPos.x, playerPos.y));
     }
     show_Player_2 = true;
     player2_Display_Start_Time = millis();
     glock19_shoot.play()
-    stamina_amount -= 1
+    stamina_amount -= bullet_cost
   }
   //left button
   if (mouseX <= width / 2 - 310 && mouseX >= width / 2 - 415 && mouseY < arrowY + 120 && mouseY > arrowY - 70 && easy_mode == true && mouseButton == LEFT && Screen == 1) {
