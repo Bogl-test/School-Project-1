@@ -1,11 +1,17 @@
 Boss:
 Design
-spawns minions?
-give it a souls-like health bar
 boss Music
 boss hit sound
 
-(change boss drops)
+
+Boss attacks:
+_____________
+projectiles (small bullets)
+spawns minions? (more enemies)
+melee (wide swing)
+melee (short stab)
+dropping obstacles (red warning indactions like for the boss)
+small explosion when boss spawns?
 
 
 _________________
@@ -15,7 +21,9 @@ difficulty tweaks
 amount of enemies
 enemy speed
 "ammo crate" spawn time
+change boss drops (1 score + 50 xp + 1 bossesKilled (100 score) Currently)
 level up rewards (1.2x speed, 1.1x damage currently)
+
 
 fix Music
 different enemy death sound

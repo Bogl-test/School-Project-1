@@ -17,12 +17,14 @@ function menuScreen() {
     rectMode(CENTER)
     fill(0, 0, 0, 190)
     rect(width / 2, height - height / 3, 700, 100)
+    rect(width / 2, height - height / 3 + 70, 150, 25)
     fill(0, 255, 0)
     textStyle(ITALIC);
     text("TITLE TBD", innerWidth / 2, innerHeight / 5)
     textSize(70)
     text("Press ENTER to Play", width / 2, height - height / 3)
-
+    textSize(20)
+    text("Press H for Help", width / 2, height - height / 3 + 70)
 
     textSize(80)
     if (easy_mode) {
@@ -72,7 +74,15 @@ function menuScreen() {
         cursor(HAND)
     }
     pop()
-    if (keyIsDown(13) && controls == true) {
+
+    if (keyIsDown(72)) {
+        Screen = 1.1
+    }
+    if (gameStartTime === undefined) {
+        gameStartTime = millis()
+    }
+
+    if (keyIsDown(13) && controls == true && millis() - gameStartTime > gameTime) {
         Screen = 2
         if (easy_mode) {
             enemySpeed *= 1
@@ -85,35 +95,67 @@ function menuScreen() {
         }
     }
 
-    else if (keyIsDown(13) && controls == false) {
+    else if (keyIsDown(13) && controls == false && millis() - gameStartTime > gameTime) {
         Screen = 1.5
         controls = true
         //deciding speed of enemy
         if (easy_mode) {
-            enemySpeed *= 1
+            enemySpeed *= easyEnemySpeed
         }
         else if (medium_mode) {
-            enemySpeed *= 1.5
+            enemySpeed *= mediumEnemySpeed
         }
         else if (hard_mode) {
-            enemySpeed *= 2
+            enemySpeed *= hardEnemySpeed
         }
     }
+}
 
+function helpScreen() {
+    push()
+    gameStartTime = undefined
+    image(School_Project_BG, 0, 0)
+    fill(255, 255, 255)
+    // stamina cost
+    textSize(40)
+    textAlign(CENTER, CENTER)
+    text("Stamina Costs", 140, 60)
+    textSize(30)
+    text("Dodging: " + roll_cost, 105, 100)
+    text("Shooting: " + bullet_cost, 100, 140)
+
+    text("Stamina Regen: " + stamina_regen_amount * stamina_regen_time / 10 + "/s", 150, 260)
+    strokeWeight(2)
+    stroke(255, 255, 255)
+    noFill()
+    rect(0, 300, 350, 110)
+    rect(0, 0, 300)
+    noStroke()
+    rectMode(CENTER)
+    fill(0, 0, 255)
+    rect(40, 360, ammo_crate_size)
+    fill(255, 255, 255)
+    text("Collect TBD to", 190, 340)
+    text("Replenish Stamina", 210, 380)
+    pop()
+    if (keyIsDown(13)) {
+        Screen = 1
+    }
 }
 
 function controls_screen() {
+    gameStartTime = undefined
+    image(School_Project_BG, 0, 0)
     push()
     noStroke()
-    fill(0, 0, 0)
-    background(70)
+    fill(255, 255, 255)
     textAlign(CENTER, CENTER)
     textSize(90)
     text("Controls", width / 2, height / 5)
     push()
     noFill()
     strokeWeight(5)
-    stroke(0, 0, 0)
+    stroke(255, 255, 255)
     rectMode(CENTER);
     rect(width / 2, height / 2 + height / 2.5, 1050, 100)
     pop()
@@ -132,7 +174,10 @@ function controls_screen() {
 
     pop()
     if (loading_meter === 1050) {
+        push()
+        fill(0, 0, 0)
         text("Press ENTER to Continue", width / 2, height / 2 + height / 2.5)
+        pop()
     }
     textSize(30)
     text("WASD or Arrow Keys to Move", width / 2, height / 3)
@@ -147,6 +192,7 @@ function controls_screen() {
 }
 
 function play_screen() {
+    gameStartTime = undefined
     image(School_Project_BG, 0, 0)
     noCursor()
     if (typeof stamina_regen_start_time === "undefined") {
@@ -169,7 +215,7 @@ function play_screen() {
 
     // Checks if the amount of enemies killed matches
     // up with when the boss should spawn
-    if (!bossSpawnValues.includes(score / 100)) {
+    if (!bossSpawnValues.includes(score / waveLenght)) {
         for (let i = 0; i < enemyCount.length; i++) {
             enemyCount[i].draw();
             enemyCount[i].over_lapping()
@@ -177,7 +223,7 @@ function play_screen() {
     }
 
     // Boss warning and spawning
-    else if (bossSpawnValues.includes(score / 100)) {
+    else if (bossSpawnValues.includes(score / waveLenght)) {
         enemyCount.splice(enemyCount)
 
         if (typeof boss_indication_start_time === "undefined" && warningCycle < warningCycleCount) {
@@ -205,21 +251,24 @@ function play_screen() {
                 rect(width / 2 - 500, height - 50, 1000, 30)
                 fill(255, 0, 0)
                 strokeWeight(0)
-                rect(width / 2 - 500, height - 50, BossHealth * 10, 30)
+                rect(width / 2 - 500, height - 50, BossHealth / BH * 1000, 30)
                 pop()
             }
         }
         else if (BossHealth <= 0) {
             boss_count.splice(boss_count.indexOf(1), 1)
             bossesKilled++
-            score += 99
+            score++
+            xp_count += 50
             for (let i = 0; i < 20; i++) {
                 enemyCount.push(new Enemy());
             }
             for (let i = 0; i < 1; i++) {
                 boss_count.push(new Boss())
             }
-            BossHealth = 100
+            BossHealth = BH + bossesKilled * 5
+            BH = BossHealth
+            enemySpeed *= 1.1
             warningCycle = 0
         }
     }
@@ -257,9 +306,6 @@ function death_screen() {
     hard_mode = false
     warningCycle = 0
     BossHealth = 100
-    if (score > high_score) {
-        high_score = score
-    }
 
     for (enemy of enemyCount) {
         enemyCount.splice(enemyCount.indexOf(enemy), 20)
@@ -294,9 +340,22 @@ function death_screen() {
         text("You have Been Corrupted by the Matrix", width / 2, height / 7)
         textSize(60)
         text("You Killed: " + score + " Enemies Along the Way", width / 2, height / 7 + height / 8)
-        text("Your highscore is: " + high_score, width / 2, height / 7 + height / 4)
+        if (bossesKilled == 1) {
+            text("And " + bossesKilled + " Boss", width / 2, height / 7 + height / 4)
+        }
+        else if (bossesKilled > 1) {
+            text("And " + bossesKilled + " Bosses", width / 2, height / 7 + height / 4)
+
+        }
+        score += bossesKilled * 100
+        if (score > high_score) {
+            high_score = score
+        }
+        text("Your score is: " + score, width / 2, height / 2)
+        text("Your highscore is: " + high_score, width / 2, height / 2 + height / 10)
         text("Press R to Restart", width / 2, height - height / 7)
         score = 0
+        bossesKilled = 0
         pop()
     }
 }

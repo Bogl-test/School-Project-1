@@ -1,9 +1,17 @@
 // GAME VARIABLES:
 let matrixGif;  // BG
-let Screen = 2  // Screen that the player starts on
+let Screen = 1  // Screen that the player starts on
 let arrowY;   // var
 
-let score = 0 // Enemies killed
+let xp_count = 0 // how much xp the player has
+let xp_to_level_up = 20
+let high_score = 0
+let bossesKilled = 0;
+let score = 0; // Enemies killed
+
+let gameTime = 100  // time before player can start the game
+let gameStartTime;  // timer
+
 
 // ammo crate
 let ammo_crate_drop = false   // var
@@ -59,11 +67,6 @@ let roll_distance = 65;
 let bullet_cost = 3 // how much stamina shooting costs
 let roll_cost = 10  // how much stamina rolling costs
 
-let xp_count = 0 // how much xp the player has
-let xp_to_level_up = 12
-let high_score = 0
-let bossesKilled = 0;
-
 let bulletDamage = 1  // damage done to bosses
 let bulletCount = []; // keeps track of every bullet on screen
 let bulletSpeed = 12;
@@ -74,16 +77,23 @@ let enemyCount = [];  // keeps track of every enemy
 let enemySpeed = 1;
 let enemySize = 30;
 let enemyTarget;  // var
+let easyEnemySpeed = 1
+let mediumEnemySpeed = 1.5
+let hardEnemySpeed = 2
+let waveLenght = 100 // lenght of enemy waves
 
 let boss_indication_time = 1500 // time that boos spawn location indication stays on screen (1.5 sec)
 let boss_indication_start_time; // timer
 let boss_count = [] // keeps track of bosses
 let warningCycle = 0  // var
 let warningCycleCount = 5 // amount of warning indications
-let BossHealth = 100
 let bossSize = enemySize * 12
+// BH = BossHealth
+let BH = 30
+let BossHealth = BH
 
-const bossSpawnValues = [0.1, 0.2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]; // Determines at what point count the boss should spawn at
+// Determines at what point count the boss should spawn at (1 = 100). measurment is score.
+const bossSpawnValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
 
 // Loads a gif used for the menu screen. 
@@ -110,7 +120,7 @@ function level_up() {
     xp_to_level_up = floor(xp_to_level_up * 1.5)
     xp_count = 0
     if (playerHealth < 5)
-      playerHealth ++
+      playerHealth++
   }
 }
 
@@ -118,12 +128,13 @@ function Ammo_Crate() {
   if (!ammo_crate_drop && millis() - ammo_crate_start_time > ammo_crate_spawn_time) {
     push()
     rectMode(CENTER)
+    fill(0, 0, 255)
     rect(ammo_crate_x, ammo_crate_y, ammo_crate_size)
     pop()
   }
   if (dist(playerPos.x, playerPos.y, ammo_crate_x, ammo_crate_y) < (playerSize + ammo_crate_size) / 2) {
     ammo_crate_start_time = undefined;
-    stamina_amount += floor(random(20,50))
+    stamina_amount += floor(random(20, 50))
   }
 }
 
@@ -592,8 +603,12 @@ function draw() {
   if (Screen == 1) {
     cursor(ARROW)
     menuScreen()
-    // Play Screen
   }
+  // Help screen
+  else if (Screen == 1.1) {
+    helpScreen()
+  }
+  // Play Screen
   else if (Screen == 1.5) {
     controls_screen();
     noCursor()
