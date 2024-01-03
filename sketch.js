@@ -480,6 +480,7 @@ class Bullet {
         BossHealth -= bulletDamage
       }
     }
+    
     if (this.pos.x < 0 || this.pos.x > innerWidth || this.pos.y > innerHeight || this.pos.y < 0) {
       bulletCount.splice(bulletCount.indexOf(this), 1)
     }

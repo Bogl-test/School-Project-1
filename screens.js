@@ -82,8 +82,9 @@ function menuScreen() {
         gameStartTime = millis()
     }
 
-    if (keyIsDown(13) && controls == true && millis() - gameStartTime > gameTime) {
-        Screen = 2
+    if (keyIsDown(13) && millis() - gameStartTime > gameTime) {
+
+        //deciding speed of enemy
         if (easy_mode) {
             enemySpeed *= 1
         }
@@ -93,20 +94,12 @@ function menuScreen() {
         else if (hard_mode) {
             enemySpeed *= 2
         }
-    }
-
-    else if (keyIsDown(13) && controls == false && millis() - gameStartTime > gameTime) {
-        Screen = 1.5
-        controls = true
-        //deciding speed of enemy
-        if (easy_mode) {
-            enemySpeed *= easyEnemySpeed
+        if (controls == false) {
+            Screen = 1.5
+            controls = true
         }
-        else if (medium_mode) {
-            enemySpeed *= mediumEnemySpeed
-        }
-        else if (hard_mode) {
-            enemySpeed *= hardEnemySpeed
+        else {
+            Screen = 2
         }
     }
 }
@@ -179,15 +172,15 @@ function controls_screen() {
         text("Press ENTER to Continue", width / 2, height / 2 + height / 2.5)
         pop()
     }
+    if (keyIsDown(13) && loading_meter === 1050) {
+        Screen = 2
+    }
     textSize(30)
     text("WASD or Arrow Keys to Move", width / 2, height / 3)
     text("LMB to Shoot", width / 2, height / 2 - height / 8)
     text("P to Pause Game", width / 2, height / 2 - height / 12)
     text("Space to Dash", width / 2, height / 2 - height / 25)
     text("ENTER to Continue Game", width / 2, height / 2)
-    if (keyIsDown(13) && loading_meter === 1050) {
-        Screen = 2
-    }
     pop()
 }
 
